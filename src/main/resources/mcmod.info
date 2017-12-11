@@ -1,0 +1,16 @@
+[
+{
+  "modid": "sinkorswim",
+  "name": "Sink or Swim",
+  "description": "Disables swimming in Minecraft",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": [ "Alsender" ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
