@@ -19,6 +19,7 @@ public class Config {
     public static List<String> biomeBlacklist = new ArrayList<String>();
     public static List<String> potionWhitelist = new ArrayList<String>();
     public static List<String> enchantWhitelist = new ArrayList<String>();
+    public static List<String> baublesWhitelist = new ArrayList<String>();
 
     public static void init(File configFile) {
         if (config == null) {
@@ -64,6 +65,13 @@ public class Config {
         }, "Armor enchantments that will allow you to swim.");
         for (String es : enchants) {
             enchantWhitelist.add(es);
+        }
+
+        String[] baubles = config.getStringList("baublesWhitelist", "general", new String[] {
+                "botania:waterring",
+        }, "Baubles that will allow you to swim.");
+        for (String bs : baubles) {
+            baublesWhitelist.add(bs);
         }
 
         if (config.hasChanged()) {

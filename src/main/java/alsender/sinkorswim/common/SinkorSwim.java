@@ -1,5 +1,6 @@
 package alsender.sinkorswim.common;
 
+import baubles.api.BaublesApi;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -12,7 +13,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -24,14 +27,15 @@ import java.util.List;
  * created by alsender on 4/12/17.
  */
 
-@Mod(modid = SinkorSwim.modid, name = SinkorSwim.name, version = SinkorSwim.version)
+@Optional.Interface(modid = "baubles", iface = "baubles.api.BaublesApi")
+@Mod(modid = SinkorSwim.modid, name = SinkorSwim.name, version = SinkorSwim.version, dependencies = "after:baubles;")
 @Mod.EventBusSubscriber
 
 public class SinkorSwim {
 
     public static final String modid = "sinkorswim";
     public static final String name = "Sink or Swim";
-    public static final String version = "0.0.1";
+    public static final String version = "1.0.0";
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -55,10 +59,11 @@ public class SinkorSwim {
                     if (player.isInWater()) {
                         if (checkPotions(player)) {
                             if (checkEnchants(player)) {
-                                if (!isNotInArmor(player))
-                                    if (block.isReplaceable(world, pos)) {
-                                        player.motionY -= 0.03D;
-                                    }
+                                if (checkBaubles(player)) {
+                                    if (!isNotInArmor(player))
+                                        if (block.isReplaceable(world, pos)) {
+                                            player.motionY -= 0.03D;
+                                        }
 
                                     if (isInBiome(world, pos)) {
                                         if (block.isReplaceable(world, pos1) || block.isReplaceable(world, pos)) {
@@ -66,6 +71,7 @@ public class SinkorSwim {
                                         }
                                     }
 
+                                }
                             }
                         }
                     }
@@ -113,8 +119,6 @@ public class SinkorSwim {
     }
 
     public static boolean checkEnchants(EntityPlayer player) {
-        //return EnchantmentHelper.getRespirationModifier(player) <= 0 && EnchantmentHelper.getDepthStriderModifier(player) <= 0;
-
         List<ItemStack> armorStacks = new ArrayList<ItemStack>();
         List<String> enchantsString = new ArrayList<String>();
 
@@ -144,5 +148,26 @@ public class SinkorSwim {
         }
 
         return Collections.disjoint(potionEffects, Config.potionWhitelist);
+    }
+
+    public static boolean checkBaubles(EntityPlayer player) {
+        if (!Loader.isModLoaded("baubles")) {
+            return true;
+        }
+        return Collections.disjoint(baublesInv(player), Config.baublesWhitelist);
+    }
+
+    @Optional.Method(modid = "baubles")
+    public static List<String> baublesInv(EntityPlayer player) {
+        List<String> listBaubles = new ArrayList<String>();
+
+        for (int i = 0; i < 6; i++) {
+            ItemStack itemBauble = BaublesApi.getBaublesHandler(player).getStackInSlot(i);
+            if (!itemBauble.isEmpty()) {
+                String nameBauble = itemBauble.getItem().getRegistryName().toString();
+                listBaubles.add(nameBauble);
+            }
+        }
+        return listBaubles;
     }
 }
