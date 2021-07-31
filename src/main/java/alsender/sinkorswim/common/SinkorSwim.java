@@ -77,8 +77,33 @@ public class SinkorSwim {
                     }
                 }
             }
+
+            if (world.isRemote) {
+                if (!player.isCreative()) {
+                    if (player.isInLava()) {
+                        if (checkPotions(player)) {
+                            if (checkEnchants(player)) {
+                                if (checkBaubles(player)) {
+                                    if (!isNotInArmor(player))
+                                        if (block.isReplaceable(world, pos)) {
+                                            player.motionY -= 0.03D;
+                                        }
+
+                                    if (isInBiome(world, pos)) {
+                                        if (block.isReplaceable(world, pos1) || block.isReplaceable(world, pos)) {
+                                            player.motionY -= 0.03D;
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
+	
 
     public static boolean isInBiome(World world, BlockPos pos) {
         if (Config.biomeBlacklist.contains(world.getBiome(pos).getBiomeName()) ||
